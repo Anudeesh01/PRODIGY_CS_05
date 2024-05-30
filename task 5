@@ -1,0 +1,31 @@
+from scapy.all import sniff, IP, TCP, UDP
+
+def packet_callback(packet):
+    # Check if the packet has an IP layer
+    if IP in packet:
+        ip_src = packet[IP].src
+        ip_dst = packet[IP].dst
+        proto = packet[IP].proto
+
+        # Check for TCP packets
+        if TCP in packet:
+            proto_name = "TCP"
+            payload = bytes(packet[TCP].payload)
+        # Check for UDP packets
+        elif UDP in packet:
+            proto_name = "UDP"
+            payload = bytes(packet[UDP].payload)
+        else:
+            proto_name = "Other"
+            payload = b''
+
+        # Print packet information
+        print(f"SOURCE IP: {ip_src}")
+        print(f"DESTINATION IP: {ip_dst}")
+        print(f"PROTOCOL: {proto_name}")
+        print(f"PAYLOAD: {payload}")
+        print("-" * 50)
+
+# Sniff packets on the network interface
+# Use the iface parameter to specify a particular interface, e.g., iface="eth0"
+sniff(prn=packet_callback, store=0)
